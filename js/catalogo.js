@@ -4,7 +4,7 @@
  */
 
 // 1. Substitua este link pelo link da sua planilha "Publicada na Web" em formato CSV
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/SUA_ID_DA_PLANILHA/pub?output=csv';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1SGcWoB6FksMOI7NMzHXGZgmrhWWR4-Y_xcEfuhrIdwc/edit?usp=sharing';
 
 async function carregarProdutos() {
     const grid = document.getElementById('grid-catalogo');
