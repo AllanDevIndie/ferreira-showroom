@@ -1,21 +1,28 @@
 /**
- * Sistema de Catálogo Inteligente DEV ALBK v3.1
- * Blindagem contra vírgulas em textos e links do Drive
+ * Sistema de Catálogo Inteligente DEV ALBK v3.2
+ * Link CSV Real + Correção de Imagens
  */
 
-const SHEET_URL = 'COLE_SEU_LINK_AQUI'; // <--- COLOQUE SEU LINK REAL AQUI
+// ESTE É O SEU LINK REAL EM FORMATO CSV
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTtOMiTsRhYTNX-nL0qCsbkg8q8pbUx01n7hVhYjGzuU7K44TKM6xrRa_xKPUvOzTn5oBHpvVEK-fe/pub?output=csv';
+
 let todosOsProdutos = [];
 
-function converterLinkDrive(url) {
-    if (url && url.includes('drive.google.com')) {
-        const id = url.split('/d/')[1]?.split('/')[0];
-        return `https://docs.google.com/spreadsheets/d/e/2PACX-1vQTtOMiTsRhYTNX-nL0qCsbkg8q8pbUx01n7hVhYjGzuU7K44TKM6xrRa_xKPUvOzTn5oBHpvVEK-fe/pubhtml`;
+function converterLinkDrive(url ) {
+    if (!url) return '';
+    // Se for link de pasta, não vai funcionar, avisamos no console
+    if (url.includes('folders')) {
+        console.warn("Link de PASTA detectado. Use o link da FOTO individual.");
+        return '';
+    }
+    if (url.includes('drive.google.com')) {
+        const id = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
+        return id ? `https://lh3.googleusercontent.com/u/0/d/${id}` : url;
     }
     return url;
 }
 
-// Função robusta para ler CSV (lida com vírgulas dentro de aspas )
-function parseCSV(text) {
+function parseCSV(text ) {
     const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
     const separator = text.includes(';') ? ';' : regex;
     return text.split(separator).map(v => v.replace(/^"|"$/g, '').trim());
