@@ -4,7 +4,7 @@
  */
 
 // 1. COLE AQUI O SEU LINK DE PUBLICAÇÃO CSV (Arquivo > Compartilhar > Publicar na Web > CSV)
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1SGcWoB6FksMOI7NMzHXGZgmrhWWR4-Y_xcEfuhrIdwc/edit?gid=0#gid=0';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTtOMiTsRhYTNX-nL0qCsbkg8q8pbUx01n7hVhYjGzuU7K44TKM6xrRa_xKPUvOzTn5oBHpvVEK-fe/pub?output=csv';
 
 // Função mágica para converter link do Drive em link direto de imagem
 function converterLinkDrive(url ) {
