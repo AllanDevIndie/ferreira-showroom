@@ -2,6 +2,15 @@
 
 Este projeto foi desenvolvido para resolver o gargalo logístico e de vendas da **Comercial Ferreira**, substituindo catálogos em PDF pesados por uma plataforma web ultra-rápida.
 
+## Demo ao Vivo
+Acesse a versão hospedada (produção):
+
+https://allandevindie.github.io/ferreira-showroom/index.html
+
+**Compatibilidade:** testes recomendados em Chrome, Edge ou Safari em dispositivos móveis e desktop.
+
+---
+
 ## 🚀 Diferenciais Estratégicos
 - **Performance Mobile:** Focado em carregar instantaneamente em conexões móveis.
 - **Catálogo Inteligente:** Estrutura preparada para integração com Google Sheets (Planilhas), permitindo atualização em tempo real sem mexer no código.
