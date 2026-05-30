@@ -1,6 +1,6 @@
 /**
- * Sistema de Catálogo Ferreira Showroom v4.0
- * Fotos Locais + Carrossel Inteligente + Sheets Sync
+ * Sistema de Catálogo Ferreira Showroom v5.0
+ * Filtros Automáticos + Fotos Locais + Carrossel + Pesquisa
  */
 
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTtOMiTsRhYTNX-nL0qCsbkg8q8pbUx01n7hVhYjGzuU7K44TKM6xrRa_xKPUvOzTn5oBHpvVEK-fe/pub?output=csv';
@@ -18,7 +18,6 @@ async function carregarDados() {
         todosOsProdutos = linhas.map(linha => {
             const colunas = parseCSV(linha);
             if (colunas.length >= 4) {
-                // Suporte a múltiplas fotos separadas por vírgula na planilha
                 const fotosRaw = colunas[4] ? colunas[4].split(',') : [];
                 const fotosProcessadas = fotosRaw.map(f => f.trim()).filter(f => f !== "");
 
@@ -33,8 +32,13 @@ async function carregarDados() {
             return null;
         }).filter(p => p && p.nome);
 
+        // 1. Gera os filtros antes de renderizar
+        gerarFiltrosAutomaticos(todosOsProdutos);
+        
+        // 2. Renderiza todos os produtos
         renderizarProdutos(todosOsProdutos);
-        configurarFiltros();
+        
+        // 3. Ativa a barra de pesquisa
         configurarPesquisa();
 
     } catch (error) {
@@ -49,6 +53,39 @@ function parseCSV(text) {
     return text.split(separator).map(v => v.replace(/^"|"$/g, '').trim());
 }
 
+function gerarFiltrosAutomaticos(produtos) {
+    const containerFiltros = document.querySelector('.filtros');
+    if (!containerFiltros) return;
+
+    // Extrai categorias únicas e ordena alfabeticamente
+    const categorias = [...new Set(produtos.map(p => p.categoria))].sort();
+
+    // Cria o HTML dos botões (começando pelo "Todos")
+    let htmlBotoes = `<button class="filter-btn active" onclick="filtrar('todos', this)">Todos</button>`;
+    
+    categorias.forEach(cat => {
+        if(cat) {
+            htmlBotoes += `<button class="filter-btn" onclick="filtrar('${cat}', this)">${cat}</button>`;
+        }
+    });
+
+    containerFiltros.innerHTML = htmlBotoes;
+}
+
+window.filtrar = function(categoria, botao) {
+    // Atualiza visual dos botões
+    const botoes = document.querySelectorAll('.filter-btn');
+    botoes.forEach(b => b.classList.remove('active'));
+    botao.classList.add('active');
+
+    // Filtra os produtos
+    const filtrados = categoria.toLowerCase() === 'todos' 
+        ? todosOsProdutos 
+        : todosOsProdutos.filter(p => p.categoria.toLowerCase() === categoria.toLowerCase());
+    
+    renderizarProdutos(filtrados);
+}
+
 const PHONE_NUMBERS = ["5581973142897", "558189927012"];
 let nextWhatsNumberIndex = 0;
 
@@ -56,16 +93,24 @@ function renderizarProdutos(lista) {
     const grid = document.getElementById('grid-catalogo');
     grid.innerHTML = '';
 
+    if(lista.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; padding: 40px;">Nenhum produto encontrado.</p>';
+        return;
+    }
+
     lista.forEach((p, index) => {
+        const whatsApp = PHONE_NUMBERS[nextWhatsNumberIndex];
+        nextWhatsNumberIndex = (nextWhatsNumberIndex + 1) % PHONE_NUMBERS.length;
+        
         const msg = encodeURIComponent(`Olá! Gostaria de saber mais sobre o produto *${p.nome}* do catálogo.`);
+        const linkWhats = `https://wa.me/${whatsApp}?text=${msg}`;
 
         const card = document.createElement('div');
         card.className = 'produto-card';
         
-        // Lógica do Carrossel Interno
         let fotosHTML = '';
         p.fotos.forEach((foto, i) => {
-            fotosHTML += `<img src="${IMG_PATH}${foto}" class="slide-foto ${i === 0 ? 'active' : ''}" alt="${p.nome}">`;
+            fotosHTML += `<img src="${IMG_PATH}${foto}" class="slide-foto ${i === 0 ? 'active' : ''}" alt="${p.nome}" loading="lazy">`;
         });
 
         const controlesHTML = p.fotos.length > 1 ? `
@@ -88,31 +133,25 @@ function renderizarProdutos(lista) {
                 <h3>${p.nome}</h3>
                 <div class="detalhes">
                     <p>${p.detalhes}</p>
-                    <span><strong>Status:</strong> ${p.status}</span>
+                    <span style="color: ${p.status.toLowerCase() === 'disponível' ? '#25D366' : '#ff4444'}; font-weight: 700;">
+                        ● ${p.status}
+                    </span>
                 </div>
-                <a href="#" target="_blank" class="btn-pedir btn-whats">Consultar no WhatsApp</a>
+                <a href="${linkWhats}" target="_blank" class="btn-pedir">Consultar no WhatsApp</a>
             </div>
         `;
         grid.appendChild(card);
-
-        const link = card.querySelector('.btn-whats');
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            const numWhats = PHONE_NUMBERS[nextWhatsNumberIndex];
-            nextWhatsNumberIndex = (nextWhatsNumberIndex + 1) % PHONE_NUMBERS.length;
-            const linkWhats = `https://wa.me/${numWhats}?text=${msg}`;
-            window.open(linkWhats, '_blank');
-        });
     });
 }
 
-// Função Global para mudar foto do carrossel
 window.mudarFoto = function(productIndex, direction) {
     const container = document.getElementById(`carrossel-${productIndex}`);
     const slides = container.querySelectorAll('.slide-foto');
     const dots = document.getElementById(`dots-${productIndex}`).querySelectorAll('.dot');
     
     let activeIndex = Array.from(slides).findIndex(s => s.classList.contains('active'));
+    if(activeIndex === -1) return;
+
     slides[activeIndex].classList.remove('active');
     dots[activeIndex].classList.remove('active');
 
@@ -122,41 +161,24 @@ window.mudarFoto = function(productIndex, direction) {
     dots[activeIndex].classList.add('active');
 }
 
-function configurarFiltros() {
-    const botoes = document.querySelectorAll('.filter-btn');
-    botoes.forEach(btn => {
-        btn.onclick = () => {
-            botoes.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const cat = btn.textContent.trim().toLowerCase();
-            const filtrados = cat === 'todos' ? todosOsProdutos : todosOsProdutos.filter(p => p.categoria.toLowerCase() === cat);
-            renderizarProdutos(filtrados);
-        };
-    });
-}
-
 function configurarPesquisa() {
-    const input = document.getElementById('search-categories');
-    if (!input) return;
-    input.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        if (q === '') {
-            // se vazio deixa como 'Todos' ativo
-            const todosBtn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.textContent.trim().toLowerCase() === 'todos');
-            if (todosBtn) { document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); todosBtn.classList.add('active'); }
-            renderizarProdutos(todosOsProdutos);
-            return;
-        }
-        // filtra produtos cujo campo 'categoria' ou 'nome' contenha a query
-        const filtrados = todosOsProdutos.filter(p => {
-            const cat = (p.categoria || '').toLowerCase();
-            const nome = (p.nome || '').toLowerCase();
-            return cat.includes(q) || nome.includes(q);
-        });
-        // desmarca botões de filtro ao pesquisar
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    const input = document.getElementById('search-input');
+    if(!input) return;
+
+    input.oninput = (e) => {
+        const termo = e.target.value.toLowerCase();
+        const filtrados = todosOsProdutos.filter(p => 
+            p.nome.toLowerCase().includes(termo) || 
+            p.categoria.toLowerCase().includes(termo) ||
+            p.detalhes.toLowerCase().includes(termo)
+        );
         renderizarProdutos(filtrados);
-    });
+        
+        // Reseta os botões de filtro visualmente
+        const botoes = document.querySelectorAll('.filter-btn');
+        botoes.forEach(b => b.classList.remove('active'));
+        if(termo === "") botoes[0].classList.add('active');
+    };
 }
 
 document.addEventListener('DOMContentLoaded', carregarDados);
