@@ -20,11 +20,21 @@
         </div>
     </nav>
 
-    <section class="hero">
-        <h1>Tecidos de Qualidade com Preço de Fábrica</h1>
-        <p>A maior variedade de Ana Ruga, Suede e Suplex da região.</p>
-        <a href="catalogo.html" class="btn">Ver Catálogo Rápido</a>
-    </section>
+<section class="hero">
+    <div class="hero-slider">
+        <div class="slide active" style="background-image: url('img/estampa1.jpg')"></div>
+        <div class="slide" style="background-image: url('img/estampa2.jpg')"></div>
+        <div class="slide" style="background-image: url('img/estampa3.jpg')"></div>
+    </div>
+    <div class="hero-content">
+        <h1 class="hero-title">Qualidade que se sente no toque.</h1>
+        <p class="hero-subtitle">Líder em atacado de tecidos e malhas em Santa Cruz do Capibaribe. O melhor preço do mercado têxtil.</p>
+        <div class="hero-btns">
+            <a href="catalogo.html" class="btn-primary">CONFIRA NOSSO CATÁLOGO</a>
+            <a href="vendedores.html" class="btn-outline">FALAR COM UM CONSULTOR</a>
+        </div>
+    </div>
+</section>
 
     <section class="section">
         <h2 class="section-title">Nossos Carros-Chefe</h2>
@@ -55,10 +65,55 @@
         </div>
     </section>
 
-    <footer>
-        &copy; 2026 Comercial Ferreira Tecidos e Malhas <br>
-        Tecnologia por <strong><a href="https://devalbk.com.br" target="_blank">DEV ALBK</a></strong>
-    </footer>
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-info">
+            <h3 class="logo" style="color: #fff; margin-bottom: 20px;">COMERCIAL <span>FERREIRA</span></h3>
+            <p>Sua parceira de confiança no mercado têxtil de Santa Cruz do Capibaribe e região.</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/comercialferreiratecidos/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/5581996991594" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-contact">
+            <h4>CONTATO</h4>
+            <p><i class="fa-solid fa-location-dot"></i> Av. Bela Vista, 1179h - Santa Tereza  
+Santa Cruz do Capibaribe - PE, 55195-500</p>
+            <p><i class="fa-solid fa-phone"></i> (81 ) 99699-1594</p>
+            <p><i class="fa-solid fa-id-card"></i> CNPJ: 07.533.138/0010-96</p>
+        </div>
+
+        <div class="footer-nav">
+            <h4>NAVEGAÇÃO</h4>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="vendedores.html">Vendedores</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Comercial Ferreira. Todos os direitos reservados.</p>
+        <p>Desenvolvido por <a href="https://devalbk.com.br" target="_blank">DEV ALBK</a></p>
+    </div>
+</footer>
 
 </body>
 </html>
+<script>
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+
+    function nextSlide() {
+        if(slides.length > 0) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+    }
+
+    if(slides.length > 1) {
+        setInterval(nextSlide, 5000); 
+    }
+</script>

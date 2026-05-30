@@ -9,7 +9,19 @@ const IMG_PATH = 'img/produtos/';
 let todosOsProdutos = [];
 
 async function carregarDados() {
+    // Adicione isso logo no início da função carregarDados()
     const grid = document.getElementById('grid-catalogo');
+    grid.innerHTML = ''; // Limpa o grid
+    for(let i = 0; i < 6; i++) { // Cria 6 cartões de esqueleto
+        grid.innerHTML += `
+            <div class="skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text" style="width: 50%"></div>
+                <div class="skeleton-btn"></div>
+            </div>
+        `;
+    }
     try {
         const response = await fetch(SHEET_URL);
         const data = await response.text();
