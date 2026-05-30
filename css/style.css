@@ -445,3 +445,35 @@ nav {
     border-radius: 8px;
     animation: skeleton-loading 1.5s infinite;
 }
+
+.hero-btns {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.btn-primary,
+.btn-outline {
+    background-color: var(--primary);
+    color: var(--black);
+    padding: 15px 35px;
+    text-decoration: none;
+    font-weight: 800;
+    border-radius: 5px;
+    display: inline-block;
+    transition: var(--transition);
+}
+
+.btn-primary:hover,
+.btn-outline:hover {
+    transform: scale(1.05);
+    background-color: var(--white);
+}
+
+.btn-outline {
+    background-color: var(--primary);
+    color: var(--dark);
+
+}
